@@ -13,6 +13,13 @@ export const Pages: CollectionConfig = {
       required: true,
     },
     {
+      name: 'author',
+      type: 'relationship',
+      relationTo: 'authors',
+      required: true,
+      hasMany: false, // single author per page; set to true if you want multiple authors
+    },
+    {
       name: 'content',
       type: 'blocks',
       blocks: [ContentBlock, LayoutBlock],
