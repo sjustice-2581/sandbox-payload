@@ -20,6 +20,7 @@ export default buildConfig({
     user: Users.slug,
     importMap: {
       baseDir: path.resolve(dirname),
+      email: false, // make sure to remove this and replace with an actual setup if going to PROD
     },
   },
   collections: [Users, Media, Authors, Pages],

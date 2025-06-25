@@ -1,59 +1,42 @@
-import { headers as getHeaders } from 'next/headers.js'
-import Image from 'next/image'
-import { getPayload } from 'payload'
+// src/app/(frontend)/page.tsx
 import React from 'react'
-import { fileURLToPath } from 'url'
 
-import config from '@/payload.config'
-import './styles.css'
+const getHomePage = async () => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_PAYLOAD_URL}/api/pages?where[slug][equals]=home`,
+    {
+      cache: 'no-store', // optional: disables ISR/SSG for dev
+    },
+  )
+  const data = await res.json()
+  return data?.docs?.[0]
+}
 
-export default async function HomePage() {
-  const headers = await getHeaders()
-  const payloadConfig = await config
-  const payload = await getPayload({ config: payloadConfig })
-  const { user } = await payload.auth({ headers })
+export default async function Home() {
+  const page = await getHomePage()
 
-  const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`
+  if (!page) {
+    return <div>⚠️ Fuck me! Home Page Not Found</div>
+  }
 
   return (
-    <div className="home">
-      <div className="content">
-        <picture>
-          <source srcSet="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg" />
-          <Image
-            alt="Payload Logo"
-            height={65}
-            src="https://raw.githubusercontent.com/payloadcms/payload/main/packages/ui/src/assets/payload-favicon.svg"
-            width={65}
-          />
-        </picture>
-        {!user && <h1>Welcome to your new project.</h1>}
-        {user && <h1>Welcome back, {user.email}</h1>}
-        <div className="links">
-          <a
-            className="admin"
-            href={payloadConfig.routes.admin}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Go to admin panel
-          </a>
-          <a
-            className="docs"
-            href="https://payloadcms.com/docs"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Documentation
-          </a>
-        </div>
-      </div>
-      <div className="footer">
-        <p>Update this page by editing</p>
-        <a className="codeLink" href={fileURL}>
-          <code>app/(frontend)/page.tsx</code>
-        </a>
-      </div>
-    </div>
+    <main>
+      <h1>{page.title}</h1>
+      {page.content?.map((block: any, i: number) => {
+        if (block.blockType === 'content') {
+          return (
+            <section key={i}>
+              {block.body?.root?.children?.map((child: any, index: number) => {
+                if (child.type === 'heading') {
+                  return <h2 key={index}>{child.children?.[0]?.text}</h2>
+                }
+                return null
+              })}
+            </section>
+          )
+        }
+        return null
+      })}
+    </main>
   )
 }

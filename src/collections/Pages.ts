@@ -3,10 +3,22 @@ import LayoutBlock from '../blocks/LayoutBlock'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
+  access: {
+    read: () => true, // <-- allow public read access
+  },
   admin: {
     useAsTitle: 'title',
   },
   fields: [
+    {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: {
+        position: 'sidebar',
+      },
+    },
     {
       name: 'title',
       type: 'text',

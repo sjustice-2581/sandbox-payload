@@ -171,6 +171,7 @@ export interface Author {
  */
 export interface Page {
   id: string;
+  slug: string;
   title: string;
   author: string | Author;
   content: (
@@ -347,6 +348,7 @@ export interface AuthorsSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  slug?: T;
   title?: T;
   author?: T;
   content?:
